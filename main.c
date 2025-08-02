@@ -68,13 +68,13 @@ void mod_open(void) {
 	nd_len_reg("classist", sizeof(classist_t));
 	class_hd = nd_open("class", "u", "class", ND_AINDEX);
 	classist_hd = nd_open("classist", "u", "classist", 0);
+}
+
+void mod_install(void) {
+	mod_open();
 
 	class_add("fighter", 10);
 	class_add("sorcerer", 6);
 	class_add("cleric", 8);
 	class_add("rogue", 8);
-}
-
-void mod_install(void) {
-	mod_open();
 }
