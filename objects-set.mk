@@ -1,0 +1,1 @@
+CFLAGS-libnd-class-o := -fPIC
