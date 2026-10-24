@@ -86,6 +86,15 @@ static inline unsigned class_add(char *name, unsigned life_dice) {
 	return class_max = (unsigned)nd_put(class_hd, NULL, &class);
 }
 
+static int
+class_row(const char *const *f, size_t n, void *user)
+{
+	(void)user;
+	if (n >= 2)
+		class_add((char *)f[0], (unsigned)atoi(f[1]));
+	return 0;
+}
+
 XY_MODULE_API void
 xy_install(void)
 {
@@ -96,8 +105,6 @@ xy_install(void)
 	class_hd = (unsigned)nd_open("class", "u", "class", ND_AINDEX);
 	classist_hd = (unsigned)nd_open("classist", "u", "classist", 0);
 
-	class_add("fighter", 10);
-	class_add("sorcerer", 6);
-	class_add("cleric", 8);
-	class_add("rogue", 8);
+	if (nd_table_load("nd-class", "classes", class_row, NULL) < 0)
+		WARN("nd-class: classes.dsv not found, no classes loaded\n");
 }
