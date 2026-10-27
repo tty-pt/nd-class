@@ -59,6 +59,30 @@ same command works either way. CI names the deps explicitly
 * `hp_max` adds the class life dice on top of the chain value;
   `on_add` assigns the class; `on_status` reports it.
 
+## In-Game Commands (`man-src/`)
+
+Class selection and review are integrated with `nd-session`'s character creation and `nd-attr`'s `status` command.
+
+## Packaged Assets (`art/`)
+
+Class insignias, skill badges, and character creation portraits.
+
+## Wire Protocol & BCP Integration
+
+Class hit dice and level bonuses fold into `BCP_HP` and `BCP_STATS` updates streamed to client HUDs.
+
+## XY Bus Hooks & Dependencies
+
+* Co-implements the `hp_max` chain and hooks `on_add` (creation) and `on_status`.
+* Depends on `nd-attr` and `nd-level`.
+
+## Modder Extension Guide
+
+To register a custom character class:
+1. Define a new `class_t` record specifying base hit die (e.g. d6, d8, d10, d12) and primary attribute affinities.
+2. Insert the class into the `class` table during `xy_install()`.
+3. Co-implement class-specific stat or combat bonuses in `hp_max` or `modifier` chains.
+
 ## Testing
 
 There is no `test.sh` here. Behaviour is asserted by the engine's own suite:
