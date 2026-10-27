@@ -41,17 +41,25 @@ static unsigned classist_hd, class_hd, class_max = 0;
  * dispatch. */
 XY_IMPL(long, hp_max, unsigned, ref)
 {
-	classist_t classist;
-	class_t class;
-	long last;
+	classist_t classist = { 0 };
+	class_t class = { 0 };
+	long last = 0;
 
-	nd_get(classist_hd, &classist, &ref);
-	nd_get(class_hd, &class, &classist.class);
+	if (nd_get(classist_hd, &classist, &ref) != 0) {
+		classist.class = 0;
+		nd_put(classist_hd, &ref, &classist);
+	}
+	if (nd_get(class_hd, &class, &classist.class) != 0) {
+		strlcpy(class.name, "fighter", sizeof(class.name));
+		class.life_dice = 10;
+	}
 
-	nd_last(&last);
+	if (nd_last(&last) <= 0)
+		last = 0;
 
 	register unsigned d = class.life_dice;
 	register unsigned l = level(ref);
+	if (l == 0) l = 1;
 	return last + d + (l - 1) * (d / 2 + 1);
 }
 
@@ -70,11 +78,17 @@ XY_IMPL(int, on_add, unsigned, ref, unsigned, type, uint64_t, v)
 
 XY_IMPL(int, on_status, unsigned, player_ref)
 {
-	classist_t classist;
-	class_t class;
+	classist_t classist = { 0 };
+	class_t class = { 0 };
 
-	nd_get(classist_hd, &classist, &player_ref);
-	nd_get(class_hd, &class, &classist.class);
+	if (nd_get(classist_hd, &classist, &player_ref) != 0) {
+		classist.class = 0;
+		nd_put(classist_hd, &player_ref, &classist);
+	}
+	if (nd_get(class_hd, &class, &classist.class) != 0) {
+		strlcpy(class.name, "fighter", sizeof(class.name));
+		class.life_dice = 10;
+	}
 
 	nd_printf(player_ref, "Class\t%8s, dlif %3u\n", class.name, class.life_dice);
 	return 0;
